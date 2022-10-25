@@ -1,0 +1,13 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Cosma George",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server-core": "^3.10.3",
+    "apollo-server-express": "^3.10.3",
+    "express": "^4.18.2",
+    "graphql": "^16.6.0"
+  }
+}
