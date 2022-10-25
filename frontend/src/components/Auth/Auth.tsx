@@ -1,7 +1,7 @@
-import { Session } from "next-auth";
-import { signIn } from "next-auth/react";
-import { Center, Stack, Text, Button, Image, Input } from "@chakra-ui/react";
-import { useState } from "react";
+import { Session } from 'next-auth';
+import { signIn } from 'next-auth/react';
+import { Center, Stack, Text, Button, Image, Input } from '@chakra-ui/react';
+import { useState } from 'react';
 
 interface IAuthProps {
   session: Session | null;
@@ -9,10 +9,10 @@ interface IAuthProps {
 }
 
 const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState('');
   const onSubmit = async () => {
     try {
-      console.log("NYI");
+      console.log('NYI');
     } catch (error) {}
   };
 
@@ -35,7 +35,7 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
           <>
             <Text fontSize="3xl">Msgr</Text>
             <Button
-              onClick={() => signIn("google")}
+              onClick={() => signIn('google')}
               leftIcon={
                 <Image
                   height="20px"
