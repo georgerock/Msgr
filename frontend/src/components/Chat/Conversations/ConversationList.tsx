@@ -12,7 +12,7 @@ interface ConversationListProps {
 export const ConversationList: React.FC<ConversationListProps> = ({
   session,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
