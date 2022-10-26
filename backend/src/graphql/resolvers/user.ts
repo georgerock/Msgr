@@ -34,7 +34,7 @@ const resolvers = {
 
         await prisma.user.update({ where: { id }, data: { username } });
         return { success: true };
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
         return {
           error: err.message,
