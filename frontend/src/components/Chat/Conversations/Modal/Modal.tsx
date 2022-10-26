@@ -14,7 +14,13 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import UserOps from '../../../../graphql/ops/user';
-import { SearchUsersData, SeachUsersInput } from '../../../../util/types';
+import {
+  SearchUsersData,
+  SeachUsersInput,
+  SearchedUser,
+} from '../../../../util/types';
+import { Participants } from './Participants';
+import { UserSearchList } from './UserSearchList';
 
 interface ModalProps {
   isOpen: boolean;
@@ -36,12 +42,23 @@ export const ConversationModal: React.FC<ModalProps> = ({
     searchUsers({ variables: { username } });
   };
 
+  const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
+
+  const addParticipant = (user: SearchedUser) => {
+    setParticipants((prev) => [...prev, user]);
+    setUsername('');
+  };
+
+  const removeParticipant = (userId: string) => {
+    setParticipants((prev) => prev.filter((p) => p.id !== userId));
+  };
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent bg="#2d2d2d" pb={4}>
-          <ModalHeader> Modal title</ModalHeader>
+          <ModalHeader> Create a conversation </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <form onSubmit={onSubmit}>
@@ -56,6 +73,19 @@ export const ConversationModal: React.FC<ModalProps> = ({
                 </Button>
               </Stack>
             </form>
+            {data?.searchUsers && (
+              <UserSearchList
+                users={data?.searchUsers}
+                addParticipant={addParticipant}
+                removeParticipant={removeParticipant}
+              />
+            )}
+            {participants.length !== 0 && (
+              <Participants
+                participants={participants}
+                removeParticipant={removeParticipant}
+              />
+            )}
           </ModalBody>
         </ModalContent>
       </Modal>
