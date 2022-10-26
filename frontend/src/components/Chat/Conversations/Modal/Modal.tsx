@@ -1,6 +1,6 @@
 /*eslint-env browser */
 
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import {
   Button,
   Input,
@@ -13,16 +13,22 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import UserOps from '../../../../graphql/ops/user';
+import ConvoOps from '../../../../graphql/ops/conversation';
 import {
   SearchUsersData,
   SeachUsersInput,
   SearchedUser,
+  CreateConversationData,
+  CreateConversationInput,
 } from '../../../../util/types';
 import { Participants } from './Participants';
 import { UserSearchList } from './UserSearchList';
+import { Session } from 'next-auth';
 
 interface ModalProps {
+  session: Session;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -30,12 +36,20 @@ interface ModalProps {
 export const ConversationModal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
+  session: {
+    user: { id: me },
+  },
 }) => {
   const [username, setUsername] = useState('');
   const [searchUsers, { data, error, loading }] = useLazyQuery<
     SearchUsersData,
     SeachUsersInput
   >(UserOps.Queries.searchUsers);
+
+  const [createConversation, { loading: convoLoading }] = useMutation<
+    CreateConversationData,
+    CreateConversationInput
+  >(ConvoOps.Mutations.createConversation);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +65,21 @@ export const ConversationModal: React.FC<ModalProps> = ({
 
   const removeParticipant = (userId: string) => {
     setParticipants((prev) => prev.filter((p) => p.id !== userId));
+  };
+
+  const onCreateConversation = async () => {
+    console.log('creating convo');
+    const others = participants.map((p) => p.id);
+    try {
+      const { data } = await createConversation({
+        variables: {
+          participantIds: [me, ...others],
+        },
+      });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(error?.message as string);
+    }
   };
 
   return (
@@ -81,10 +110,23 @@ export const ConversationModal: React.FC<ModalProps> = ({
               />
             )}
             {participants.length !== 0 && (
-              <Participants
-                participants={participants}
-                removeParticipant={removeParticipant}
-              />
+              <>
+                <Participants
+                  participants={participants}
+                  removeParticipant={removeParticipant}
+                />
+                <Button
+                  bg="barnd.100"
+                  width="100%"
+                  mt={6}
+                  _hover={{ bg: 'brand.100' }}
+                  isLoading={convoLoading}
+                  onClick={() => onCreateConversation()}
+                >
+                  {' '}
+                  Create Conversation{' '}
+                </Button>
+              </>
             )}
           </ModalBody>
         </ModalContent>
