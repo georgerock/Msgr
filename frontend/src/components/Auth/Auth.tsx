@@ -1,5 +1,6 @@
 import { Session } from 'next-auth';
 import { signIn } from 'next-auth/react';
+import { toast } from 'react-hot-toast';
 import { Center, Stack, Text, Button, Image, Input } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useMutation } from '@apollo/client';
@@ -13,7 +14,7 @@ interface IAuthProps {
 
 const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
   const [username, setUsername] = useState('');
-  const [createUsername, { data, loading, error }] = useMutation<
+  const [createUsername, { loading, error }] = useMutation<
     CreateUsernameData,
     CreateUsernameVariables
   >(UserOperations.Mutations.createUsername);
@@ -23,8 +24,23 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
       return;
     }
     try {
-      await createUsername({ variables: { username } });
-    } catch (error) {
+      const { data } = await createUsername({ variables: { username } });
+
+      if (!data) {
+        throw new Error();
+      }
+
+      if (data.createUsername.error) {
+        const {
+          createUsername: { error },
+        } = data;
+        throw new Error(error);
+      }
+
+      toast.success('Username successfully created!');
+      reloadSession();
+    } catch (error: any) {
+      toast.error(error?.message);
       console.error('onSubmit error', error);
     }
   };
