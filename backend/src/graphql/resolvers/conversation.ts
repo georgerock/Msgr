@@ -3,6 +3,15 @@ import { ApolloError } from 'apollo-server-core';
 import { GraphQLContext } from '../../util/types';
 
 const resolvers = {
+  Query: {
+    conversations: async (
+      _: any,
+      __: any,
+      { session, prisma }: GraphQLContext
+    ) => {
+      console.log('convo query');
+    },
+  },
   Mutation: {
     createConversation: async (
       _: any,
@@ -51,6 +60,7 @@ export const participantPopulated =
       select: {
         id: true,
         username: true,
+        image: true,
       },
     },
   });
@@ -66,6 +76,7 @@ export const conversationPopulated =
           select: {
             id: true,
             username: true,
+            image: true,
           },
         },
       },
