@@ -76,9 +76,11 @@ export const ConversationModal: React.FC<ModalProps> = ({
           participantIds: [me, ...others],
         },
       });
+
+      console.log('createConversation data: ', data);
     } catch (err: any) {
       console.error(err);
-      toast.error(error?.message as string);
+      toast.error(err?.message);
     }
   };
 
