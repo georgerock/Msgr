@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { ApolloError } from 'apollo-server-core';
-import { GraphQLContext } from '../../util/types';
+import { ConversationPopulated, GraphQLContext } from '../../util/types';
 
 const resolvers = {
   Query: {
@@ -8,8 +8,38 @@ const resolvers = {
       _: any,
       __: any,
       { session, prisma }: GraphQLContext
-    ) => {
-      console.log('convo query');
+    ): Promise<Array<ConversationPopulated>> => {
+      if (!session?.user) {
+        throw new ApolloError('Not authorized');
+      }
+
+      const {
+        user: { id: me },
+      } = session;
+
+      try {
+        const allConvos = await prisma.conversation.findMany({
+          // This where clause does not return the expected result. We filter insted
+          // This bug has been confirmd by the prisma team, seems mongo specific.
+          // where: {
+          //   participants: {
+          //     some: {
+          //       userId: {
+          //         equals: me
+          //       }
+          //     }
+          //   }
+          // },
+          include: conversationPopulated,
+        });
+
+        return allConvos.filter(
+          (c) => !!c.participants.find((p) => p.userId === me)
+        );
+      } catch (err: any) {
+        console.error('getConversations error: ', err);
+        throw new ApolloError('Unable to get conversations');
+      }
     },
   },
   Mutation: {

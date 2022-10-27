@@ -9,7 +9,7 @@ const ConversationFields = `
         username
         image
       }
-      hasSeenLatestMessage
+      seenLatest
     }
     latestMessage {
       id

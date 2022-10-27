@@ -13,7 +13,7 @@ const typeDefs = gql`
 
   type Conversation {
     id: String
-    # latestMessage: Message
+    latestMessage: Message
     participants: [Participant]
     createdAt: Date
     updatedAt: Date
@@ -22,7 +22,7 @@ const typeDefs = gql`
   type Participant {
     id: String
     user: User
-    hasSeenLatestMesasge: Boolean
+    seenLatest: Boolean
   }
 
   type Query {
